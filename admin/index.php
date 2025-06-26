@@ -256,6 +256,11 @@ if (isset($_POST['login'])) {
                 </div>
 
                 <button type="submit" name="login" class="btn-login">Entrar</button>
+            <div style="text-align: right; margin-top: 10px;">
+                <a href="recuperar_senha" style="font-size: 0.95em; color: #3a7bd5; text-decoration: none;">
+                    Esqueceu sua senha?
+                </a>
+            </div>
             </form>
         </div>
     </div>
