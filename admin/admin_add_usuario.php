@@ -206,8 +206,8 @@ $numLinhaCursos = $contagens['total_cursos'] ?? 0;
                                         <select id="nivel_acesso" name="nivel_acesso" class="form-select" required>
                                             <option value="" disabled selected>Selecione o nível</option>
                                             <option value="admin">Admin</option>
-                                            <option value="editor">Editor</option>
-                                            <option value="usuario">Usuário</option>
+                                            <option value="normal">Normal</option>
+                                            
                                         </select>
                                     </div>
                                 </div>

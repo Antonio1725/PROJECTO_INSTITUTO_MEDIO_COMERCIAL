@@ -1,8 +1,13 @@
 <?php
 // Página de recuperação de senha
 
-// Configurações do banco de dados
+// Inclui PHPMailer
+require_once '../phpmailer/src/PHPMailer.php';
+require_once '../phpmailer/src/SMTP.php';
+require_once '../phpmailer/src/Exception.php';
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 $mensagem = '';
 
@@ -20,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensagem = '<div style="color: red; margin-bottom: 15px;">Erro ao conectar ao banco de dados.</div>';
         } else {
             // Ajustar charset
-            $mysqli->set_charset($charset);
+            if (isset($charset)) {
+                $mysqli->set_charset($charset);
+            }
 
             // Verificar se o usuário existe
             $sql = "SELECT id, email FROM usuarios WHERE email = ? AND nome_completo = ?";
@@ -56,14 +63,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
                         $link .= "://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/nova_senha.php?token=$token";
 
-                        // Enviar e-mail
+                        // Enviar e-mail usando PHPMailer
                         $assunto = "Recuperação de Senha";
-                        $mensagem_email = "Olá,\n\nRecebemos uma solicitação para redefinir sua senha. Para criar uma nova senha, acesse o link abaixo:\n\n$link\n\nSe você não solicitou, ignore este e-mail.\n\nAtenciosamente,\nEquipe";
-                        $headers = "From: no-reply@seudominio.com\r\n";
+                        $mensagem_email = "Olá,<br><br>Recebemos uma solicitação para redefinir sua senha. Para criar uma nova senha, acesse o link abaixo:<br><br><a href=\"$link\">$link</a><br><br>Se você não solicitou, ignore este e-mail.<br><br>Atenciosamente,<br>Equipe";
 
-                        if (mail($usuario['email'], $assunto, $mensagem_email, $headers)) {
+                        $mail = new PHPMailer(true);
+                        try {
+                            // Configurações do servidor SMTP
+                            $mail->isSMTP();
+                            $mail->Host = 'smtp.gmail.com';
+                            $mail->SMTPSecure = 'tls';
+                            $mail->Port = 587;
+                            $mail->Username = 'antoniodiogo1725@gmail.com';
+                            $mail->Password = 'btcdgpvfwdpjsrtr';
+                            $mail->SMTPAuth = true;
+                            $mail->CharSet = 'UTF-8';
+
+                            $mail->setFrom('antoniodiogo1725@gmail.com', 'Instituto Médio Comercial de Luanda');
+                            $mail->addAddress($usuario['email']);
+
+                            $mail->isHTML(true);
+                            $mail->Subject = $assunto;
+                            $mail->Body = $mensagem_email;
+                            $mail->SMTPOptions = [
+                                'ssl' => [
+                                    'verify_peer'  => false,
+                                    'verify_peer_name' => false,
+                                    'allow_self_signed' => true
+                                ]
+                            ];
+                            $mail->send();
                             $mensagem = '<div style="color: green; margin-bottom: 15px;">Se os dados estiverem corretos, as instruções de recuperação foram enviadas para seu e-mail.</div>';
-                        } else {
+                        } catch (Exception $e) {
                             $mensagem = '<div style="color: red; margin-bottom: 15px;">Erro ao enviar o e-mail de recuperação. Tente novamente mais tarde.</div>';
                         }
                     } else {

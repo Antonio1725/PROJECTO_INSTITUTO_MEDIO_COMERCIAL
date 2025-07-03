@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verifica se o usuário está logado. Se não, redireciona para a página de login.
 if (!isset($_SESSION["nome_completo"])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit(); // Garante que o script pare de ser executado.
 }
 
@@ -22,10 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = trim($_POST['titulo'] ?? '');
     $conteudo = trim($_POST['conteudo'] ?? '');
     $stato = $_POST['stato'] ?? 'Inativo';
-    $id_usuario = $_SESSION['usuario_id'] ?? 0; // Assumindo que o ID do usuário está na sessão.
+    $id_usuario = $_SESSION['id_usuario'] ?? 0; // Assumindo que o ID do usuário está na sessão.
 
     $imagem_path = null;
     $erros = [];
+    
 
     // Validação dos campos
     if (empty($titulo)) {

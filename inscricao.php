@@ -253,13 +253,15 @@ include_once "footer.php";
 
 <?php
 
-// Inclua o PHPMailer (ajuste o caminho conforme necessário)
+// Inclui os arquivos necessários
+require 'phpmailer/src/PHPMailer.php';
+require 'phpmailer/src/SMTP.php';
+require 'phpmailer/src/Exception.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once 'PHPMailer/src/Exception.php';
-require_once 'PHPMailer/src/PHPMailer.php';
-require_once 'PHPMailer/src/SMTP.php';
+$mail = new PHPMailer(true);
 
 $conn = $conexao;
 
@@ -322,25 +324,36 @@ if (isset($_POST['cadastrar'])) {
             $assunto = 'Confirmação de Inscrição';
             $mensagem = "Olá $nome,<br><br>Sua inscrição foi realizada com sucesso!<br><br>Obrigado.";
             try {
-                $mail = new PHPMailer();
+              
                 // Configurações do servidor SMTP local
-                $mail->isSMTP(true);
-                $mail->Host = 'smtp.mailsend.net';
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
-                $mail->Username = 'MS_c5LmDC@test-51ndgwvzx9dlzqx8.mlsender.net';
-                $mail->Password = 'mssp.ccIPERk.0r83ql3v1vpgzw1j.NKOvAMA';
+                $mail->Username = 'antoniodiogo1725@gmail.com';
+                $mail->Password = 'btcdgpvfwdpjsrtr';
                 $mail->SMTPAuth = true;
                 $mail->CharSet = 'UTF-8';
 
-                $mail->setFrom('teste-51ndgwvzx9dlzqx8.mlsender.net' . $_SERVER['SERVER_NAME'], 'Instituto Médio Comercial de Luanda');
+                $mail->setFrom('antoniodiogo1725@gmail.com', 'Instituto Médio Comercial de Luanda');
                 $mail->addAddress($email, $nome);
 
                 $mail->isHTML(true);
                 $mail->Subject = $assunto;
                 $mail->Body = $mensagem;
-
+                $mail->SMTPOptions = [
+                    'ssl' => [
+                        'verify_peer'  => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    ]
+                ]; 
                 $mail->send();
             } catch (Exception $e) {
+                echo "<script>alert('erro');</script>";
+
+                echo "<script>alert('$mail->ErrorInfo');</script>";
+                exit();
                 // Você pode logar o erro se quiser
                 // error_log('Erro ao enviar email: ' . $mail->ErrorInfo);
             }

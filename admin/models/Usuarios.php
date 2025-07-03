@@ -14,7 +14,7 @@ class Usuarios
 
     public function create($nome_completo, $nome_usual, $email, $senha, $nivel_acesso, $imagem, $estado)
     {
-        $senha_hash = password_hash($senha, PASSWORD_BCRYPT);
+        $senha_hash = $senha;
 
         // Prepara a consulta SQL
         $stmt = $this->conn->prepare("
